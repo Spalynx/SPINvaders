@@ -25,4 +25,4 @@ Maybe TODO:
   - Sprite animations. (explosions, fire, etc)
   
 Contributing (For good practice):
-  Don't, this is for learning, pull requests denied.
+  - Don't, this is for learning, pull requests denied.
