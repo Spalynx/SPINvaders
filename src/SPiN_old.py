@@ -12,13 +12,19 @@ W_HEIGHT = 480
 W_WIDTH = 640
 SCORE = 0;
 LIVES = 3;
+ENEMIES = 20;
 
 class SPInvadersGui(tk.Frame):
     def __init__(self, master=None):
-        tk.Frame.__init__(self, master)        
+        tk.Frame.__init__(self, master)
+        global R
+        global L
+        L = False
+        R = True
         self.pack()
         self.createWidgets()
 
+    #builds all of the widgets to be placed on screen.
     def createWidgets(self):
         global canvas
         canvas = tk.Canvas(self, width= W_WIDTH, height = W_HEIGHT)
@@ -31,8 +37,10 @@ class SPInvadersGui(tk.Frame):
         self.drawPlayer()
         self.drawScore()
         self.drawLives()
-        
-        return;
+        for x in range(0,ENEMIES):
+            self.drawEnemy(x);
+            self.moveEnemy(x);
+        #return;
 
     def on_key_press (self, event):
         c = canvas.coords("player")
@@ -49,8 +57,59 @@ class SPInvadersGui(tk.Frame):
     def drawPlayer (self):
          canvas.create_rectangle(50, W_HEIGHT-50, 20, W_HEIGHT-20, fill="orange", tag = "player")
 
-    #def drawEnemy (self):
+    def getEnemyTagName(self, tagnum):
+        if tagnum < 10:
+            return ("enemy0" + str(tagnum))
+        else:
+            return ("enemy"+str(tagnum))
+
+    def moveEnemy(self, num: int):
+            global L
+            global R
+
+            #creates a string of name tag, for ease
+            name = self.getEnemyTagName(num)
+
+            print (name + str(canvas.coords(name)))
+            #Flips the movement, moves down one.
+            if L and canvas.coords(name)[0] <= 50:
+                L = False
+                R = True
+                self.moveDownAll(name)
+            elif R and canvas.coords(name)[0] >= W_WIDTH-50:
+                R = False
+                L = True
+                self.moveDownAll(name)
+            else:
+                #Movement - L for leftwards mvmnt, etc.
+                if L:
+                    canvas.move(name,-40, 0)
+                if R:
+                    canvas.move(name, 40, 0)
+                canvas.update()
+
+            #TODO: if it hits the player area, end the game.
+            canvas.after(2000, self.moveEnemy, num)
+    def moveDownAll(self, tagthatcauses):
+        print("ELWIND")
+        for x in range (0, ENEMIES):
+            name = self.getEnemyTagName(x)
+            canvas.move(name,0,40)
+        return;
+    def drawEnemy (self, row:int):
+        col = 1;
+        name = self.getEnemyTagName(row)
+
+        if (float(row)/10 >= 1):
+            col = row
+            row -= (int)(row/10)*10 #rids it's self of any non ten number
+            col = (col - row)/10
+        canvas.create_rectangle( (row*40)+20, (col*40)+20, (row*40)+40, (col*40)+40
+                , fill="red", tag=name);
+        
     #def drawBarricade(self):
+
+
     def drawScore(self):
         canvas.create_text(100,10,tag = "score", 
             text = "[] your score", justify = tk.RIGHT, fill="red")
