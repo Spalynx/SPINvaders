@@ -6,8 +6,17 @@ progress: v.0.1.0
   - drawing of the player (only a box)
   - drawing of scores and lives
   - complete removal of any documentation at all!
-  
+progress: v.0.2.1
+  - Complete rewrite of the base; OOP instead of single class game.
+  - Keyboard inputs handled by Player class.
+  -   - NOTE: I might just throw event handler in the player, which would remove lag.
+  - Player movement, and input completed.
+  - Missle movement and termination.
+  -   - NOTE: Needs work on enemy impact.
+  - Haha, documentation, are you crazy?!
+
 Immediate TODO:
+  - Set up changelog readme, for good measure.
   - Documentation, find a standard one, doxygen/javadoc like
   - Game timer
   - Get the player sprite picture set up.
