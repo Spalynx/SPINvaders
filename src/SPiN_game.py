@@ -10,9 +10,6 @@ import time
 
 W_HEIGHT = 480
 W_WIDTH = 640
-LIVES = 3;
-SCORE = 0;
-ENEMIES = 20;
 
 ''' This is one of the three top level classes used by SPiN.py class.
 #	GameScreen is the overall class for starting the game, while TitleScreen,
@@ -23,7 +20,7 @@ ENEMIES = 20;
 '''
 
 class GameScreen(tk.Frame):
-	SCORE = 0;	LIVES = 3;	ENEMIES = 20;
+	SCORE = 0;	LIVES = 3;	ENEMIES = 40;
 	characters = None;	 canvas = None;
 	
 	def __init__(self, master=None):
@@ -41,9 +38,11 @@ class GameScreen(tk.Frame):
 		self.canvas.update()
 		self.canvas.create_rectangle(10, W_HEIGHT-10, W_WIDTH-10, 10,
 				fill="black" , width=20, outline="grey", tag="background")
+		e = EnemyHandler(self.ENEMIES, self)
 
 		#draws all characters
 		self.characters[0].draw();
+		e.draw()
 		self.canvas.pack()
 
 		#init lives and score
@@ -69,17 +68,17 @@ class GameScreen(tk.Frame):
 
 	def lives_iterate(self, i):
 		'''Adds a value to the lives in the class, if they go below zero, the game ends.'''
-		global LIVES
-		LIVES += i;
+
+		self.LIVES += i;
 		self.canvas.itemconfigure(self.canvas.find_withtag("lives"),
-			text="[" + str(LIVES) + "] your score")
+			text="[" + str(self.LIVES) + "] your score")
 	def score_iterate(self, i):
-		global SCORE
-		SCORE += i;
+		'''Adds a value to the score in the class, if they go below zero, the game ends.'''
+		self.SCORE += i;
 		
 		#Updates the lives printed on screen.
 		self.canvas.itemconfigure(self.canvas.find_withtag("score"),
-			text="[" + str(SCORE) + "] your score")
+			text="[" + str(self.SCORE) + "] your score")
 
 	def draw_score(self):
 		'''Draws the score to screen, this should only be called once per game.'''
@@ -92,3 +91,31 @@ class GameScreen(tk.Frame):
 	def end_game():
 		''' You just lost! This function sends you to the high score screen.'''
 		ScoreScreen(SCORE)
+
+class EnemyHandler:
+	enemysize = 20
+	characters = None
+	count = 0
+
+	def __init__(self, enemycount: int, parent: GameScreen):
+		'''Building enemycount amount of enemies, setting their positions and names.'''
+		self.characters = parent.characters
+		self.count = enemycount
+
+		for x in range (0, self.count):
+			column = x//10;	row = x - column*10; #Row strips the leading tens num, column strips the ones num.
+			print(": " + str(row))
+			#Creates enemies in the correct location, and adds to the characters list. 
+			self.characters.append( spinE.Enemy(x, 	30 + row*(self.enemysize + 10),
+						30 + column*(self.enemysize + 10), 
+						parent.canvas, parent, self.enemysize) )
+			#consider calculating the x and y info inside the enemy class.
+
+	def draw(self):
+		import string
+		for char in self.characters:
+			if(str.find(char.name, "enemy") >= 0):
+				#if enemy is in the tag, draw it.
+				print("{" + str(char.posx) + " , " + str(char.posy) + "}")
+				char.draw()
+

@@ -57,6 +57,24 @@ class Character:
 		''' "Conscious, am I dead?" - Dory'''
 		return
 
+	def fire_missle(self):
+		''' Fires a missle. This fn checks to see if you have fired too many missles.
+			if you have, it whiffs the shot, and flashes,
+			if you have not, it creates a missle, adds it to the fired array, and sets it to move.
+		'''
+
+		if(len(self.fired) < 4):
+			self.fired.append(Missle(self, len(self.fired)))
+		else:
+			#Whiffs the shot, produces a red box.
+			#TODO: Consider simply flashing the player box red.
+			self.canvas.create_rectangle(self.posx, self.posy, self.posx+30, self.posy+10, fill="red", tag="whiff")
+			self.canvas.after(100, self.whiff_missle)
+	def whiff_missle(self):
+		''' Simply deletes the box created in fire missle's whiff case. '''
+		#TODO: Insert sound here.
+		self.canvas.delete("whiff") #might need to get the item
+
 ''' This class represents the player controlled entity in the program.
 #	The player is allowed sideways movement and the ability to fire a missle.
 #	Every time the player fires a missle, the game subtracts points, in an attempt to
@@ -101,29 +119,41 @@ class Player(Character):
 			self.key = "" #fun fact: without this line, autofire
 			self.canvas.after(16, self.move) #~60FPS on movement
 
-
-	def fire_missle(self):
-		''' Fires a missle. This fn checks to see if you have fired too many missles.
-			if you have, it whiffs the shot, and flashes,
-			if you have not, it creates a missle, adds it to the fired array, and sets it to move.
-		'''
-
-		if(len(self.fired) < 4):
-			self.fired.append(Missle(self, len(self.fired)))
-		else:
-			#Whiffs the shot, produces a red box.
-			#TODO: Consider simply flashing the player box red.
-			self.canvas.create_rectangle(self.posx, self.posy, self.posx+30, self.posy+10, fill="red", tag="whiff")
-			self.canvas.after(100, self.whiff_missle)
-	def whiff_missle(self):
-		''' Simply deletes the box created in fire missle's whiff case. '''
-		#TODO: Insert sound here.
-		self.canvas.delete("whiff") #might need to get the item
+	#REFACTOR: fire_missle and whiff_missle sent to superclass.
 
 	#TODO: do
 	def check_death(self):
 		return
 
+''' This class represents the enemy entity, multiples of this are handled by their '''
+class Enemy(Character):
+	misslecount = 0
+	size = 0
+	key = ''
+
+	def __init__(self):
+		''' Sets some basic values if you're lazy. '''
+		self.name = "enemy"
+		self.posx = 20
+		self.posy = W_HEIGHT - 50
+	def __init__(self, n: str, x: int, y: int, c: tk.Canvas, par, size:int):
+		''' Sets the values with the superclasses' constructor. '''
+		self.size = size
+		Character.__init__(self,n,x,y,c,par)
+		self.move()
+	def __init__(self, enemynum: int, x: int, y: int, c: tk.Canvas, par, size: int):
+		''' Sets the values with the superclasses' constructor. Creates the name based upon enemy index. '''
+		n = self.get_enemy_name(enemynum);
+		self.size = size
+		Character.__init__(self,n,x,y,c,par)
+		self.move()
+
+	def get_enemy_name(self, enemynum: int) -> str:
+		''' Given the number, creates a string name of the enemy. '''
+		return "enemy" + str(enemynum);
+	def draw(self):
+		'''Draws the character to the canvas. Since this should be mostly abstract, it's just a box.'''
+		self.canvas.create_rectangle(self.posx, self.posy,self.posx+self.size,self.posy+self.size, tag=self.name,fill="orange")
 class Missle(Character):
 	UPMOVE = None 		#IF true the missle flies up, otherwise it flies down.
 	parent = None		#This is already in Character, I might delete, or keep for verbosity.
@@ -132,7 +162,7 @@ class Missle(Character):
 	def __init__(self,parent, listnum):
 		''' Fills variables in the parent, and decides which way it should move.'''
 		self.canvas = parent.canvas
-		self.name = parent.name + "_mis" + str(parent.misslecount)
+		self.name = parent.name[:1] + "_mis" + str(parent.misslecount)
 		self.posx = parent.posx + 15
 		self.parent = parent;
 		self.listnum = listnum
@@ -173,7 +203,7 @@ class Missle(Character):
 		player = self.parent
 		
 		#Case for going out of bounds.
-		if(self.posy < 0 or self.posy > W_HEIGHT):
+		if(self.posy < 20 or self.posy > W_HEIGHT-20):
 			self.death()
 			return;
 		#Case for encountering player
