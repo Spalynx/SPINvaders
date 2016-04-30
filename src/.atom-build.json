@@ -1,0 +1,18 @@
+{
+  "cmd": "python ",
+  "name": "<name of target>",
+  "args": ["<argument1>", "<argument2>"],
+  "sh": true,
+  "cwd": "<current working directory for `cmd`>",
+  "errorMatch": [
+    "^regexp1$",
+    "^regexp2$"
+  ],
+  "keymap": "<keymap string>",
+  "atomCommandName": "namespace:command",
+  "targets": {
+    "<name of target>": {
+      "cmd": "<command to execute>",
+    }
+  }
+}
