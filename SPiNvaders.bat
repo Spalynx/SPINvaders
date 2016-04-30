@@ -1,1 +1,1 @@
-@echo off && start /MIN python src/SPiN.py
+start /MIN python src/SPiN.py
