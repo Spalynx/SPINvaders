@@ -1,4 +1,14 @@
-Excuse my lack of documentation, It's 6 in the morning and no thank you!
+Excuse my lack of documentation! It's 6 in the morning and no thank you!
+
+##############################################################################################
+Discontinued because of lack of interest. This was started at a SEMO monthly hackathon,
+and halfway through, I learned that using tk+python for a game was a silly thing to do indeed.
+Of course, if I optimized it more, it would run, but that finding killed the soul of it.
+
+I'm gonna leave this project here for a short while, for the sake of nostalgia.
+
+Also, "Excuse my lack of documentation!" was a terrible idea, the project is unreadable!
+###############################################################################################
 
 progress: v.0.1.0
   - basic framing and such
